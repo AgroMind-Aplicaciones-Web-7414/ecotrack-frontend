@@ -1,0 +1,97 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "EcoTrack API (Mock)",
+    "version": "1.0.0",
+    "description": "Contrato de API JSON de ejemplo para las entidades del dominio EcoTrack"
+  },
+  "servers": [
+    { "url": "https://api.ecotrack.local/v1" }
+  ],
+  "paths": {
+    "/organizations": {
+      "get": { "summary": "List organizations", "responses": { "200": { "description": "OK" } } },
+      "post": { "summary": "Create organization", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/OrganizationCreate" } } } }, "responses": { "201": { "description": "Created" } } }
+    },
+    "/organizations/{orgId}": {
+      "get": { "summary": "Get organization by id" },
+      "put": { "summary": "Update organization" },
+      "delete": { "summary": "Delete organization" }
+    },
+    "/cultivos": {
+      "get": { "summary": "List cultivations" },
+      "post": { "summary": "Create cultivation", "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CultivationCreate" } } } } }
+    },
+    "/cultivos/{cultivoId}": {
+      "get": { "summary": "Get cultivation" },
+      "put": { "summary": "Update cultivation" },
+      "delete": { "summary": "Delete cultivation" }
+    },
+    "/tasks": {
+      "get": { "summary": "List tasks" },
+      "post": { "summary": "Create task" }
+    },
+    "/users/login": {
+      "post": { "summary": "User login" }
+    },
+    "/users/register": {
+      "post": { "summary": "User registration" }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Organization": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "ownerId": { "type": "string" }
+        }
+      },
+      "OrganizationCreate": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" }
+        },
+        "required": ["name"]
+      },
+      "Cultivation": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "organizationId": { "type": "string" }
+        }
+      },
+      "CultivationCreate": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "organizationId": { "type": "string" }
+        },
+        "required": ["name","organizationId"]
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string" },
+          "password": { "type": "string" }
+        },
+        "required": ["email","password"]
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string" }
+        }
+      }
+    }
+  }
+}
