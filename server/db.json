@@ -1,19 +1,17 @@
 {
-  "posts": [
+  "task": [
     {
       "id": 1,
-      "title": "json-server",
-      "author": "typicode"
     }
   ],
-  "comments": [
+  "activity": [
     {
       "id": 1,
-      "body": "some comment",
-      "postId": 1
+      "name": "abonar",
+      "duration": "3 days",
+      "date": "luisa",
+      "volume": "50 kg",
+      "image": "img"
     }
-  ],
-  "profile": {
-    "name": "typicode"
-  }
+  ]
 }
