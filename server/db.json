@@ -2,16 +2,11 @@
   "task": [
     {
       "id": 1,
+      "title": "json-server",
+      "author": "typicode"
     }
   ],
-  "activity": [
     {
       "id": 1,
-      "name": "abonar",
-      "duration": "3 days",
-      "date": "luisa",
-      "volume": "50 kg",
-      "image": "img"
     }
-  ]
 }
