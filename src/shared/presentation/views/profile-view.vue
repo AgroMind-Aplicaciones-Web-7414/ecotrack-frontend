@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import AppLayout from '../components/app-layout.vue';
-import { userStore } from '../../../user/application/user.store.js';
+import { userStore } from '../../../iam/application/user.store.js';
 
 // PrimeVue
 import Card from 'primevue/card';

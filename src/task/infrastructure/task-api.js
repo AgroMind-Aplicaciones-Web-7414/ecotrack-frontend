@@ -1,12 +1,12 @@
 import axios from 'axios'
 import {TaskAssembler} from "./task.assembler.js"
 
-const API_URL = 'http://localhost:3000/tasks'
-
 export class TaskApi{
+    baseUrl = import.meta.env.VITE_API_BASE_URL;
+    tasksEndpoint = import.meta.env.VITE_TASKS_ENDPOINT;
 
     async getTasksCompleted(){
-        const endpoint = `${API_URL}?status=Completed`;
+        const endpoint = `${this.baseUrl}${this.tasksEndpoint}?status=Completed`;
         try{
             const response = await axios.get(endpoint);
             return response.data.map(task=> TaskAssembler.toEntityFromResponse(task))
@@ -16,7 +16,7 @@ export class TaskApi{
     }
 
     async getTasksInProgress(){
-        const endpoint = `${API_URL}?status=InProgress`;
+        const endpoint = `${this.baseUrl}${this.tasksEndpoint}?status=InProgress`;
         try{
             const response = await axios.get(endpoint);
             return response.data.map(task=> TaskAssembler.toEntityFromResponse(task))
@@ -26,7 +26,7 @@ export class TaskApi{
     }
 
     async getTasksPending(){
-        const endpoint = `${API_URL}?status=Pending`;
+        const endpoint = `${this.baseUrl}${this.tasksEndpoint}?status=Pending`;
         try{
             const response = await axios.get(endpoint);
             return response.data.map(task=> TaskAssembler.toEntityFromResponse(task))
@@ -36,7 +36,7 @@ export class TaskApi{
     }
 
     async updateStatus(taskID, newStatus){
-        const endpoint = `${API_URL}/${taskID}`
+        const endpoint = `${this.baseUrl}${this.tasksEndpoint}/${taskID}`
         try{
             const response = await axios.patch(endpoint, {status: newStatus})
             return response.data
@@ -46,7 +46,7 @@ export class TaskApi{
     }
 
     async updateCompletedDate(taskID, newCompletedDate){
-        const endpoint = `${API_URL}/${taskID}`
+        const endpoint = `${this.baseUrl}${this.tasksEndpoint}/${taskID}`
         try{
             const response = await axios.patch(endpoint, {completedAt: newCompletedDate})
             return response.data
@@ -56,7 +56,7 @@ export class TaskApi{
     }
 
     async updateStartedDate(taskId, newStartedDate){
-        const endpoint = `${API_URL}/${taskId}`
+        const endpoint = `${this.baseUrl}${this.tasksEndpoint}/${taskId}`
         try{
             const response = await axios.patch(endpoint, {startedAt: newStartedDate})
             return response.data
@@ -67,7 +67,7 @@ export class TaskApi{
 
     async getTaskById(taskId){
         const stringId = String(taskId)
-        const endpoint = `${API_URL}/${stringId}`
+        const endpoint = `${this.baseUrl}${this.tasksEndpoint}/${stringId}`
         try{
             const response = await axios.get(endpoint);
             return TaskAssembler.toEntityFromResponse(response.data)
