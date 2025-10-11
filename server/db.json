@@ -29,6 +29,12 @@
       "name": "alex",
       "email": "poponce@a.com",
       "password": "1"
+    },
+    {
+      "id": "1760170050513",
+      "name": "jorge",
+      "email": "11@a.com",
+      "password": "1"
     }
   ],
   "crops": [
@@ -165,6 +171,39 @@
       "duration": "3 days",
       "volume": "ass",
       "evidence": "asd"
+    }
+  ],
+  "organizations": [
+    {
+      "id": "2",
+      "name": "Cooperativa Verde Valle",
+      "description": "Asociación de agricultores orgánicos",
+      "status": "active",
+      "members": [
+        "1"
+      ],
+      "createdAt": "2024-02-20",
+      "location": "Valle Sagrado, Cusco"
+    },
+    {
+      "id": "3",
+      "name": "Asociación EcoFarm",
+      "description": "Red de productores sostenibles",
+      "status": "active",
+      "members": [
+        "1"
+      ],
+      "createdAt": "2024-03-10",
+      "location": "Urubamba, Cusco"
+    },
+    {
+      "id": "1760170827144",
+      "name": "Cultivos Diego",
+      "description": "Plantacion de papas",
+      "location": "ica",
+      "createdAt": "2025-10-11",
+      "status": "active",
+      "members": []
     }
   ]
 }

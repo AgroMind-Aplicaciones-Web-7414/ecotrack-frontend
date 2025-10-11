@@ -1,16 +1,22 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { organizationService } from '../../application/organization.service.js';
 import AppLayout from '../../../shared/presentation/components/app-layout.vue';
 
 import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
+import Textarea from 'primevue/textarea';
 import Button from 'primevue/button';
 import Avatar from 'primevue/avatar';
 
 const name = ref('');
 const description = ref('');
 const locationTxt = ref('');
+
+// Estados del servicio
+const loading = computed(() => organizationService.state.loading);
+const error = computed(() => organizationService.state.error);
 
 const allMembers = ref([
   { id: 1, name: 'Miembro 1', avatar: 'https://i.pravatar.cc/100?img=12' },
@@ -20,7 +26,7 @@ const allMembers = ref([
 ]);
 
 const search = ref('');
-const selected = ref([1, 2]);
+const selected = ref([]);
 
 const filtered = computed(() => {
   const q = search.value.trim().toLowerCase();
@@ -38,11 +44,29 @@ function removeMember(id) {
 }
 
 const router = useRouter();
-function createOrg() {
+
+async function createOrg() {
   if (!name.value.trim()) {
     alert('Ingresa el nombre de la organización');
     return;
   }
+
+  try {
+    const organizationData = {
+      name: name.value.trim(),
+      description: description.value.trim(),
+      location: locationTxt.value.trim()
+    };
+
+    await organizationService.createOrganization(organizationData);
+    router.push({ name: 'dashboard' });
+  } catch (err) {
+    console.error('Error creating organization:', err);
+    alert('Error al crear la organización');
+  }
+}
+
+function goBack() {
   router.push({ name: 'dashboard' });
 }
 </script>
