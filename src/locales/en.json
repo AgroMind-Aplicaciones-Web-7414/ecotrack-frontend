@@ -1,0 +1,4 @@
+{
+  "auth": { "invalidCredentials": "Invalid credentials" },
+  "common": { "unexpectedError": "Unexpected error occurred" }
+}
