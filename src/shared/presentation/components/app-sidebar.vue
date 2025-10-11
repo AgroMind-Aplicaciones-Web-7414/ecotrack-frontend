@@ -29,6 +29,10 @@ const userName = userStore.state.user?.name || 'Usuario';
         <i class="pi pi-check-square"></i><span>Tareas</span>
       </router-link>
 
+      <router-link class="item" :to="{ name: 'weather' }">
+        <i class="pi pi-sun"></i><span>Clima</span>
+      </router-link>
+
       <router-link class="item" :to="{ name: 'crops' }" v-if="false">
         <i class="pi pi-leaf"></i><span>Cultivos</span>
       </router-link>
