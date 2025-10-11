@@ -1,4 +1,16 @@
 {
-  "auth": { "invalidCredentials": "Credenciales inválidas" },
-  "common": { "unexpectedError": "Ocurrió un error inesperado" }
+  "auth": {
+    "invalidCredentials": "Credenciales inválidas",
+    "emailAlreadyExists": "El email ya existe",
+    "registrationSuccess": "Registro exitoso",
+    "logout": "Cerrar Sesión"
+  },
+  "common": {
+    "unexpectedError": "Ocurrió un error inesperado",
+    "serviceUnavailable": "Servicio no disponible, intente más tarde"
+  },
+  "dashboard": {
+    "title": "Panel de Control",
+    "welcome": "Bienvenido de nuevo"
+  }
 }
