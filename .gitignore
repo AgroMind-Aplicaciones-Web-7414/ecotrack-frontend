@@ -1,0 +1,6 @@
+# JetBrains IDEs
+.idea/
+*.iml
+out/
+# Archivos temporales de Scratches y Consoles (por si acaso)
+.idea/scratches/
