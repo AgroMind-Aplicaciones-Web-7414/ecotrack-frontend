@@ -1,20 +1,19 @@
 {
-  "task": [
+  "posts": [
     {
       "id": 1,
-      "title": "abonar",
-      "description": "abonar1",
-      "charge": "luisa"
+      "title": "json-server",
+      "author": "typicode"
     }
   ],
-  "activity": [
+  "comments": [
     {
       "id": 1,
-      "name": "abonar",
-      "duration": "3 days",
-      "date": "luisa",
-      "volume": "50 kg",
-      "image": "img"
+      "body": "some comment",
+      "postId": 1
     }
-  ]
+  ],
+  "profile": {
+    "name": "typicode"
+  }
 }
