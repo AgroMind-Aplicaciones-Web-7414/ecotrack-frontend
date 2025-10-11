@@ -1,201 +1,323 @@
-<script setup lang="js">
-import {useRouter} from "vue-router";
-import {computed, onMounted, ref} from "vue";
-import {CultivationService} from '../../application/cultivation.service.js'
+<script setup>
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { cultivationService } from '../../application/cultivation.service.js';
+import AppLayout from '../../../shared/presentation/components/app-layout.vue';
+import Button from 'primevue/button';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import Tag from 'primevue/tag';
 
-const router = useRouter()
-const crops = ref([])
-const cropService = new CultivationService()
+const router = useRouter();
+
+// Estados reactivos del servicio
+const cultivations = computed(() => cultivationService.state.cultivations);
+const loading = computed(() => cultivationService.state.loading);
+const error = computed(() => cultivationService.state.error);
 
 onMounted(async () => {
-  crops.value = await cropService.getCrops()
-})
+  try {
+    await cultivationService.getAllCultivations();
+  } catch (err) {
+    console.error('Error loading cultivations:', err);
+  }
+});
 
+const goCreateCultivation = () => {
+  router.push('/crops/new');
+};
 
-function goToNewCrop(){
-  router.push("crops/new")
-}
+const editCultivation = (cultivation) => {
+  router.push(`/crops/${cultivation.id}/edit`);
+};
 
-function formatDate(date){
-  const newdate = new Date(date)
-  const day = newdate.getDate()
-  const month = newdate.getMonth()+1
-  const year = newdate.getFullYear()
-  return `${day}/${month}/${year}`
-}
+const deleteCultivation = async (cultivation) => {
+  if (confirm(`¿Estás seguro de que quieres eliminar el cultivo "${cultivation.name}"?`)) {
+    try {
+      await cultivationService.deleteCultivation(cultivation.id);
+    } catch (err) {
+      alert('Error al eliminar el cultivo');
+      console.error('Error deleting cultivation:', err);
+    }
+  }
+};
 
-const totalSurface = computed(() => {
-  return (crops.value || []).reduce((sum, crop)=>{
-    const surfaceValue = parseFloat(crop.surface)
-    return sum + (isNaN(surfaceValue) ? 0 : surfaceValue)
-  },0)
-})
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('es-ES', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+const getGrowthStageColor = (stage) => {
+  const colors = {
+    'Siembra': 'info',
+    'Germinación': 'success',
+    'Vegetativo': 'success',
+    'Floración': 'warning',
+    'Fructificación': 'warning',
+    'Tuberización': 'danger',
+    'Maduración': 'danger',
+    'Cosecha': 'success'
+  };
+  return colors[stage] || 'secondary';
+};
 </script>
 
 <template>
-  <div class="container">
-    <h2 class="title">Lista de Cultivos</h2>
-    <div class="container-crops">
-      <div class="crops-container">
-        <div class="crops-grid" v-for="crop in crops" :key="crop.id">
-          <pv-card class="crop-card">
-            <template #content>
-              <div class="crop-content">
-                <h3 class="crop-name">{{crop.name}}</h3>
-                <div class="crop-info">
-                  <p><span class="label">Superficie: </span> {{crop.surface}}</p>
-                  <p><span class="label">Ubicacion: </span> {{crop.location}}</p>
-                  <p><span class="label"> Fecha de Siembra</span> {{formatDate(crop.plantingDate)}}</p>
+  <AppLayout>
+    <div class="cultivations-container">
+      <!-- Header -->
+      <div class="header">
+        <div class="title-section">
+          <h1>Gestión de Cultivos</h1>
+          <p>Administra y supervisa todos tus cultivos agrícolas</p>
+        </div>
+
+        <div class="actions">
+          <Button
+            label="Nuevo Cultivo"
+            icon="pi pi-plus"
+            @click="goCreateCultivation"
+            class="p-button-success"
+            :disabled="loading"
+          />
+        </div>
+      </div>
+
+      <!-- Estado de carga -->
+      <div v-if="loading" class="loading-state">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+        <p>Cargando cultivos...</p>
+      </div>
+
+      <!-- Estado de error -->
+      <div v-else-if="error" class="error-state">
+        <i class="pi pi-exclamation-triangle" style="font-size: 2rem; color: #e74c3c"></i>
+        <p>{{ error }}</p>
+        <Button
+          label="Reintentar"
+          icon="pi pi-refresh"
+          @click="cultivationService.getAllCultivations()"
+          class="p-button-outlined"
+        />
+      </div>
+
+      <!-- Lista de cultivos -->
+      <div v-else-if="cultivations.length > 0" class="cultivations-section">
+        <DataTable :value="cultivations" responsiveLayout="scroll" class="cultivations-table">
+          <Column field="name" header="Cultivo" sortable>
+            <template #body="slotProps">
+              <div class="cultivation-name">
+                <i class="pi pi-leaf text-green-600"></i>
+                <div>
+                  <div class="name">{{ slotProps.data.name }}</div>
+                  <div class="variety" v-if="slotProps.data.variety">{{ slotProps.data.variety }}</div>
                 </div>
               </div>
             </template>
-          </pv-card>
-        </div>
-        <div>
-          <pv-button class="new-crop" @click="goToNewCrop">+
-            <p>Añadir Cultivo</p>
-          </pv-button>
+          </Column>
 
-        </div>
+          <Column field="surface" header="Superficie" sortable>
+            <template #body="slotProps">
+              <span class="surface-badge">{{ slotProps.data.surface }}</span>
+            </template>
+          </Column>
+
+          <Column field="location" header="Ubicación">
+            <template #body="slotProps">
+              <div class="location-info">
+                <i class="pi pi-map-marker"></i>
+                <span>{{ slotProps.data.location }}</span>
+              </div>
+            </template>
+          </Column>
+
+          <Column field="plantingDate" header="Fecha de Siembra" sortable>
+            <template #body="slotProps">
+              <span class="date-text">{{ formatDate(slotProps.data.plantingDate) }}</span>
+            </template>
+          </Column>
+
+          <Column field="growthStage" header="Etapa">
+            <template #body="slotProps">
+              <Tag
+                :value="slotProps.data.growthStage"
+                :severity="getGrowthStageColor(slotProps.data.growthStage)"
+                class="growth-tag"
+              />
+            </template>
+          </Column>
+
+          <Column header="Acciones">
+            <template #body="slotProps">
+              <div class="action-buttons">
+                <Button
+                  icon="pi pi-pencil"
+                  class="p-button-rounded p-button-text p-button-warning"
+                  @click="editCultivation(slotProps.data)"
+                  title="Editar cultivo"
+                />
+                <Button
+                  icon="pi pi-trash"
+                  class="p-button-rounded p-button-text p-button-danger"
+                  @click="deleteCultivation(slotProps.data)"
+                  title="Eliminar cultivo"
+                />
+              </div>
+            </template>
+          </Column>
+        </DataTable>
+      </div>
+
+      <!-- Estado sin cultivos -->
+      <div v-else class="empty-state">
+        <i class="pi pi-leaf box-icon"></i>
+        <h2 class="title">Aún no hay cultivos</h2>
+        <p>Comienza creando tu primer cultivo agrícola</p>
+        <Button
+          label="Crear Primer Cultivo"
+          icon="pi pi-plus"
+          @click="goCreateCultivation"
+          class="p-button-success"
+        />
       </div>
     </div>
-    <pv-card class="total-area-card">
-      <template #content>
-        <div class="total-content">
-          <span class="icon-surface pi pi-globe"></span>
-          <div class="text-content">
-            <h3>Total Area</h3>
-            <p>{{totalSurface}} ha</p>
-          </div>
-        </div>
-      </template>
-    </pv-card>
-  </div>
-
+  </AppLayout>
 </template>
 
 <style scoped>
-:global(html, body){
-  margin: 0;
-  padding: 0;
-  height: 100%;
+.cultivations-container {
+  padding: 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
 }
-.container {
+
+.header {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 80vh;
-  justify-content: flex-start;
-  padding: 1rem 0;
-  gap: 1rem;
-  box-sizing: border-box;
-}
-.container-crops {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  box-shadow: 1px 1px 7px rgb(218, 218, 218) !important;
-  border-radius: 15px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
   padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-.title{
-  margin: 0.5rem 0;
+
+.title-section h1 {
+  margin: 0 0 0.5rem 0;
+  color: #2c5530;
+  font-size: 2rem;
 }
-.crops-container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  justify-items: center;
-  align-items: center;
-  width: 100%;
-  max-width: 1200px;
-}
-.new-crop {
-  background-color: #2196F3 !important;
-  border-radius: 10px !important;
-  color: white !important;
-  border: none;
-  width: 15rem;
-  height: 18rem;
-  font-size: 4rem !important;
-  justify-content: center;
-  transition: transform 0.3s ease !important;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.new-crop p{
-  font-size: 1rem !important;
-  margin-top: 0.5rem;
-}
-.crop-card {
-  background-color: #2196F3 !important;
-  color: white;
-  box-shadow: none !important;
-  border-radius: 10px !important;
-  width: 15rem;
-  height: 18rem;
-  justify-content: center;
-  transition: transform 0.3s ease;
-}
-.crop-card:hover{
-  transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-.crop-content{
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.5rem;
-  height: 100%;
-}
-.crop-name{
-  font-size: 1.3rem;
-  font-weight: 600;
-  margin-bottom: 0.4rem;
-  text-transform: capitalize;
-}
-.crop-info p{
-  margin: 0.2rem 0;
-  font-size: 0.95rem;
-}
-.label{
-  font-weight: 500;
-  opacity: 0.9;
-}
-.new-crop:hover {
-  transform: translateY(-5px);
-  color: white !important;
-}
-.total-area-card{
-  background-color: #2E7D32 !important;
-  color: white !important;
-  border-radius: 10px !important;
-  width: 38vh;
-  height: 12vh !important;
-  display: flex;
-  text-align: left !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  margin: 0.5rem 0;
-}
-.total-content{
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-.total-area-card h3{
+
+.title-section p {
   margin: 0;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.cultivations-table {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cultivation-name {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cultivation-name .name {
+  font-weight: 600;
+  color: #2c5530;
+}
+
+.cultivation-name .variety {
+  font-size: 0.875rem;
+  color: #666;
+  font-style: italic;
+}
+
+.surface-badge {
+  background: #E8F5E8;
+  color: #2E7D32;
+  padding: 0.25rem 0.75rem;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.location-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+}
+
+.location-info i {
+  color: #4CAF50;
+}
+
+.date-text {
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.growth-tag {
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loading-state, .error-state, .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+  margin-top: 2rem;
+}
+
+.loading-state p, .error-state p, .empty-state p {
+  margin: 1rem 0;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.box-icon {
+  font-size: 4rem;
+  color: #95a5a6;
+  margin-bottom: 1rem;
+}
+
+.empty-state .title {
+  margin: 0.5rem 0;
+  color: #2c5530;
   font-size: 1.5rem;
 }
-.total-area-card p{
-  margin: 0;
-  font-size: 1.3rem;
-}
-.icon-surface{
-  font-size: 4rem;
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .cultivations-container {
+    padding: 0.5rem;
+  }
 }
 </style>

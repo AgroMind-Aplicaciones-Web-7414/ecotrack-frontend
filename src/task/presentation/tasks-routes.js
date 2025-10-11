@@ -5,26 +5,26 @@ const logs = ()=> import('./views/farmer/logs.component.vue')
 const checkList = ()=> import('./views/farmer/checklist-view.component.vue')
 const taskDashboard = ()=> import('./views/farmer/task-dashboard.component.vue')
 
-const tasksRoutes =[
+const tasksRoutes = [
     {
         path: "/tasks",
         component: taskDashboard,
         redirect: "/tasks/completed",
-        children:[
+        children: [
             {
-                path:"completed",
+                path: "completed",
                 components: {"task-dashboard": completedTasks},
             },
             {
-                path:"in-progress",
+                path: "in-progress",
                 components: {"task-dashboard": inProgressTasks},
             },
             {
-                path:"pending",
+                path: "pending",
                 components: {"task-dashboard": pendingTasks},
             },
             {
-                path:"logs",
+                path: "logs",
                 components: {"task-dashboard": logs},
             },
             {

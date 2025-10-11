@@ -246,5 +246,46 @@
         "1"
       ]
     }
+  ],
+  "cultivations": [
+    {
+      "id": "1",
+      "name": "Maíz Amarillo Duro",
+      "surface": "3.5 ha",
+      "location": "Parcela Norte - Valle Sagrado",
+      "plantingDate": "2024-03-15",
+      "farmerId": "1",
+      "organizationId": "2",
+      "status": "active",
+      "variety": "PM-213",
+      "growthStage": "Vegetativo",
+      "createdAt": "2024-03-10"
+    },
+    {
+      "id": "2",
+      "name": "Quinua Blanca",
+      "surface": "2.8 ha",
+      "location": "Parcela Sur - Valle Sagrado",
+      "plantingDate": "2024-04-20",
+      "farmerId": "1",
+      "organizationId": "2",
+      "status": "active",
+      "variety": "Salcedo INIA",
+      "growthStage": "Floración",
+      "createdAt": "2024-04-15"
+    },
+    {
+      "id": "3",
+      "name": "Papa Nativa",
+      "surface": "1.5 ha",
+      "location": "Campo Experimental - Urubamba",
+      "plantingDate": "2024-05-10",
+      "farmerId": "1",
+      "organizationId": "3",
+      "status": "active",
+      "variety": "Huayro",
+      "growthStage": "Tuberización",
+      "createdAt": "2024-05-05"
+    }
   ]
 }

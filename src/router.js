@@ -3,7 +3,9 @@ import userRoutes from "./iam/presentation/user-routes.js"
 import tasksRoutes from "./task/presentation/tasks-routes.js"
 import organizationRoutes from "./organization/presentation/organization-routes.js"
 import parcelRoutes from "./organization/presentation/parcel-routes.js"
+import cultivationRoutes from "./cultivation/presentation/crops-routes.js"
 import weatherRoutes from "./weather/presentation/weather-routes.js"
+import reportRoutes from "./Report/report-routes.js"
 import DashboardView from "./shared/presentation/views/dashboard-view.vue"
 
 const router = createRouter({
@@ -15,7 +17,9 @@ const router = createRouter({
         ...tasksRoutes,
         ...organizationRoutes,
         ...parcelRoutes,
-        ...weatherRoutes
+        ...cultivationRoutes,
+        ...weatherRoutes,
+        ...reportRoutes
     ]
 })
 
