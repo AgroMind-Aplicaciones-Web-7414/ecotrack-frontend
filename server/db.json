@@ -205,5 +205,46 @@
       "status": "active",
       "members": []
     }
+  ],
+  "plots": [
+    {
+      "id": "1",
+      "organizationId": "2",
+      "name": "Parcela Norte",
+      "area": "5.2 ha",
+      "location": "Sector Norte - Valle Sagrado",
+      "crop": "Maíz orgánico",
+      "status": "active",
+      "createdAt": "2024-03-15",
+      "members": [
+        "1"
+      ]
+    },
+    {
+      "id": "2",
+      "organizationId": "2",
+      "name": "Parcela Sur",
+      "area": "3.8 ha",
+      "location": "Sector Sur - Valle Sagrado",
+      "crop": "Quinua",
+      "status": "active",
+      "createdAt": "2024-04-20",
+      "members": [
+        "1"
+      ]
+    },
+    {
+      "id": "3",
+      "organizationId": "3",
+      "name": "Campo Experimental",
+      "area": "2.1 ha",
+      "location": "Zona Este - Urubamba",
+      "crop": "Papas nativas",
+      "status": "active",
+      "createdAt": "2024-05-10",
+      "members": [
+        "1"
+      ]
+    }
   ]
 }

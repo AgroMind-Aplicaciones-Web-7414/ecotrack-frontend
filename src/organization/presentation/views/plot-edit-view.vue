@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { plotService } from '../../application/plot.service.js';
 import AppLayout from '../../../shared/presentation/components/app-layout.vue';
 
 import Card from 'primevue/card';
@@ -8,10 +9,14 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Avatar from 'primevue/avatar';
 
-// Id de organización (opcional, si venimos desde su detalle)
 const route = useRoute();
 const router = useRouter();
-const orgId = route.query.orgId ?? null;
+const plotId = route.params.id;
+
+// Estados del servicio
+const loading = computed(() => plotService.state.loading);
+const error = computed(() => plotService.state.error);
+const currentPlot = computed(() => plotService.state.currentPlot);
 
 // ---- Formulario ----
 const name = ref('');
@@ -28,7 +33,7 @@ const allMembers = ref([
 ]);
 
 const search = ref('');
-const selected = ref([1, 2]);
+const selected = ref([]);
 
 const filtered = computed(() => {
   const q = search.value.trim().toLowerCase();
@@ -36,40 +41,98 @@ const filtered = computed(() => {
   return allMembers.value.filter(m => m.name.toLowerCase().includes(q));
 });
 
+onMounted(async () => {
+  try {
+    await plotService.getPlotById(plotId);
+    // Llenar el formulario con los datos actuales
+    if (currentPlot.value) {
+      name.value = currentPlot.value.name;
+      area.value = currentPlot.value.area;
+      locationTxt.value = currentPlot.value.location;
+      crop.value = currentPlot.value.crop;
+      selected.value = currentPlot.value.members.map(id => parseInt(id));
+    }
+  } catch (err) {
+    console.error('Error loading plot:', err);
+  }
+});
+
 function toggleMember(id) {
   const i = selected.value.indexOf(id);
   if (i >= 0) selected.value.splice(i, 1);
   else selected.value.push(id);
 }
+
 function removeMember(id) {
   selected.value = selected.value.filter(x => x !== id);
 }
 
-function createParcel() {
+async function updateParcel() {
   if (!name.value.trim()) {
     alert('Ingresa el nombre de la parcela');
     return;
   }
-  // TODO: POST real a API (parcel.create)
-  // payload: { orgId, name, area, location: locationTxt, crop, members: selected }
-  // Redirige al detalle de la organización si lo tenemos, o al dashboard.
-  if (orgId) router.push({ name: 'organization-detail', params: { id: orgId } });
-  else router.push({ name: 'dashboard' });
+
+  try {
+    const plotData = {
+      organizationId: currentPlot.value.organizationId,
+      name: name.value.trim(),
+      area: area.value.trim(),
+      location: locationTxt.value.trim(),
+      crop: crop.value.trim(),
+      members: selected.value.map(id => String(id))
+    };
+
+    await plotService.updatePlot(plotId, plotData);
+
+    // Redirigir al detalle de la organización
+    router.push({ name: 'organization-detail', params: { id: currentPlot.value.organizationId } });
+  } catch (err) {
+    console.error('Error updating plot:', err);
+    alert('Error al actualizar la parcela');
+  }
+}
+
+function goBack() {
+  if (currentPlot.value) {
+    router.push({ name: 'organization-detail', params: { id: currentPlot.value.organizationId } });
+  } else {
+    router.push({ name: 'dashboard' });
+  }
 }
 </script>
 
 <template>
   <AppLayout>
     <div class="wrap">
-      <h2 class="page-title">Crear Parcela</h2>
+      <h2 class="page-title">Editar Parcela</h2>
 
-      <div class="grid">
+      <!-- Estado de carga -->
+      <div v-if="loading" class="loading-state">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+        <p>Cargando datos de la parcela...</p>
+      </div>
+
+      <!-- Estado de error -->
+      <div v-else-if="error" class="error-state">
+        <i class="pi pi-exclamation-triangle" style="font-size: 2rem; color: #e74c3c"></i>
+        <p>{{ error }}</p>
+        <Button
+          label="Volver"
+          icon="pi pi-arrow-left"
+          @click="goBack"
+          class="p-button-outlined"
+        />
+      </div>
+
+      <!-- Formulario de edición -->
+      <div v-else-if="currentPlot" class="grid">
         <!-- Panel: Datos -->
         <Card class="panel">
           <template #title>
             <div class="panel-title">
-              <i class="pi pi-user mr-2 text-orange-500"></i>
-              <span>Datos:</span>
+              <i class="pi pi-pencil mr-2 text-orange-500"></i>
+              <span>Datos de la Parcela:</span>
             </div>
           </template>
           <template #content>
@@ -78,10 +141,10 @@ function createParcel() {
               <InputText v-model="name" placeholder="Nombre" class="mb-3" />
 
               <label class="label">Área</label>
-              <InputText v-model="area" placeholder="Área" class="mb-3" />
+              <InputText v-model="area" placeholder="Área (ej: 5.2 ha)" class="mb-3" />
 
-              <label class="label">Ubicacion</label>
-              <InputText v-model="locationTxt" placeholder="Ubicacion" class="mb-3" />
+              <label class="label">Ubicación</label>
+              <InputText v-model="locationTxt" placeholder="Ubicación" class="mb-3" />
 
               <label class="label">Cultivo</label>
               <InputText v-model="crop" placeholder="Cultivo" />
@@ -93,14 +156,14 @@ function createParcel() {
         <Card class="panel">
           <template #title>
             <div class="panel-title">
-              <i class="pi pi-user mr-2 text-orange-500"></i>
-              <span>Miembros:</span>
+              <i class="pi pi-users mr-2 text-orange-500"></i>
+              <span>Miembros Asignados:</span>
             </div>
           </template>
           <template #content>
             <div class="search-box mb-3">
               <i class="pi pi-search"></i>
-              <InputText v-model="search" placeholder="Buscar" class="w-full" />
+              <InputText v-model="search" placeholder="Buscar miembros" class="w-full" />
             </div>
 
             <div class="member-list">
@@ -119,8 +182,18 @@ function createParcel() {
         </Card>
       </div>
 
-      <div class="actions">
-        <Button label="Crear" class="btn-primary" @click="createParcel" />
+      <div class="actions" v-if="currentPlot">
+        <Button
+          label="Cancelar"
+          class="p-button-outlined btn-cancel"
+          @click="goBack"
+        />
+        <Button
+          label="Actualizar"
+          class="btn-primary"
+          @click="updateParcel"
+          :loading="loading"
+        />
       </div>
     </div>
   </AppLayout>
@@ -152,10 +225,31 @@ function createParcel() {
 .selected{color:#16a34a;font-size:1.25rem;cursor:pointer}
 .del{color:#111;font-size:1.1rem;cursor:pointer}
 
-.actions{display:flex;justify-content:center;margin-top:28px}
+.actions{display:flex;justify-content:center;gap:1rem;margin-top:28px}
 .btn-primary{min-width:160px}
+.btn-cancel{min-width:120px}
 
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+
+.loading-state, .error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px dashed #dee2e6;
+  margin-top: 2rem;
+}
+
+.loading-state p, .error-state p {
+  margin: 1rem 0;
+  color: #666;
+  font-size: 1.1rem;
+}
+
 @media (max-width: 940px){
   .grid{grid-template-columns:1fr}
 }
