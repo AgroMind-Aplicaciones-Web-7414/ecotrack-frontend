@@ -2,7 +2,6 @@
 import {ref, onMounted} from 'vue'
 import {useRouter, useRoute} from 'vue-router'
 import AppLayout from '../../../../shared/presentation/components/app-layout.vue'
-import Weather from '../../../../weather/presentation/views/weather.component.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -54,11 +53,6 @@ const navigateToTab = (tab) => {
             </template>
           </pv-card>
         </div>
-      </div>
-
-      <!-- Weather Component -->
-      <div class="weather-section">
-        <Weather />
       </div>
 
       <!-- Navigation Tabs -->
@@ -152,9 +146,6 @@ const navigateToTab = (tab) => {
   font-size: 0.9rem;
 }
 
-.weather-section {
-  margin-bottom: 2rem;
-}
 
 .tabs-navigation {
   display: flex;

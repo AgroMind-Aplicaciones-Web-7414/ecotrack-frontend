@@ -25,7 +25,7 @@ const userName = userStore.state.user?.name || 'Usuario';
         <i class="pi pi-desktop"></i><span>Inicio</span>
       </router-link>
 
-      <router-link class="item" to="/tasks">
+      <router-link class="item" to="/tasks/completed">
         <i class="pi pi-check-square"></i><span>Tareas</span>
       </router-link>
 
