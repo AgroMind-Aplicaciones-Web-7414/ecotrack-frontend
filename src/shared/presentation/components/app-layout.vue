@@ -19,5 +19,5 @@ export default { name: 'app-layout', components:{ AppSidebar, AppTopbar } };
 <style scoped>
 .layout{display:flex;min-height:100vh;background:#e9eef2}
 .content{flex:1;display:flex;flex-direction:column}
-.page{padding:18px;max-width:1100px;margin:0 auto}
+.page{padding:18px;width:100%;flex:1}
 </style>
