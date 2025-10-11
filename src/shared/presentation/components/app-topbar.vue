@@ -1,5 +1,9 @@
-<script>
-export default { name: 'app-topbar' };
+<script setup>
+import { computed } from 'vue';
+import { userStore } from '../../../iam/application/user.store.js';
+
+// Obtener información del usuario de forma reactiva
+const userName = computed(() => userStore.state.user?.name || 'Usuario');
 </script>
 
 <template>
@@ -12,6 +16,9 @@ export default { name: 'app-topbar' };
     </div>
 
     <div class="right">
+      <div class="user-info">
+        <span class="user-name">{{ userName }}</span>
+      </div>
       <i class="pi pi-envelope icon"></i>
       <i class="pi pi-bell icon"></i>
     </div>
@@ -27,7 +34,10 @@ export default { name: 'app-topbar' };
 .brand{display:flex;align-items:center;gap:.75rem}
 .logo{width:36px;height:36px;border-radius:50%;overflow:hidden;background:#2b7a3f;display:grid;place-items:center}
 .logo img{width:100%;height:100%;object-fit:cover}
-.title{margin:0;color:#111}          /* ← texto negro */
+.title{margin:0;color:#111}
 .right{display:flex;align-items:center;gap:12px}
-.icon{color:#111}                    /* ← íconos negros */
+.user-info{display:flex;align-items:center;gap:8px}
+.user-name{color:#2c5530;font-weight:600;font-size:0.9rem}
+.icon{color:#111;cursor:pointer}
+.icon:hover{color:#2c5530}
 </style>
