@@ -1,9 +1,9 @@
 <script setup>
-import { userStore } from '../../../user/application/user.store.js';
+import { computed } from 'vue';
+import { userStore } from '../../../iam/application/user.store.js';
 
-// Obtener información del usuario
-const user = userStore.state.user;
-const userName = user?.name || 'Usuario';
+// Obtener información del usuario de forma reactiva
+const userName = computed(() => userStore.state.user?.name || 'Usuario');
 </script>
 
 <template>

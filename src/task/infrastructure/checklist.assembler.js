@@ -1,4 +1,4 @@
-import {CheckList} from './../domain/model/checklist.entity.js'
+import {CheckList} from '../domain/model/checklist.entity.js'
 import {ItemAssembler} from './item.assembler.js'
 
 export class ChecklistAssembler{
