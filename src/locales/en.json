@@ -1,0 +1,16 @@
+{
+  "auth": {
+    "invalidCredentials": "Invalid credentials",
+    "emailAlreadyExists": "Email already exists",
+    "registrationSuccess": "Registration successful",
+    "logout": "Logout"
+  },
+  "common": {
+    "unexpectedError": "Unexpected error occurred",
+    "serviceUnavailable": "Service unavailable, please try again later"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back"
+  }
+}
